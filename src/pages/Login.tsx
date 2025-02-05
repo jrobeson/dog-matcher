@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "../components/ui/card";
 import { useAuth } from "@/store/AuthContext";
-import logo from "../../public/dog-matcher-logo.png";
+// import logo from "../../public/dog-matcher-logo.png";
 
 interface LoginData {
   name: string;

@@ -13,8 +13,10 @@ export async function fetchDogIds(
   page?: string,
 ): Promise<DogResponse> {
   const params = new URLSearchParams();
-  if (breedFilters?.length !== 0) {
-    params.append("breeds", breedFilters!.join(","));
+  if (breedFilters && breedFilters.length > 0) {
+    breedFilters.forEach((breed) => {
+      params.append("breeds", breed);
+    });
   }
   if (sort) params.append("sort", `breed:${sort}`);
   if (page) {
@@ -53,4 +55,12 @@ export async function fetchDogs({
     next: dogIdData.next,
     prev: dogIdData.prev,
   };
+}
+
+export async function fetchBreeds() {
+  const { data } = await axios.get(
+    "https://frontend-take-home-service.fetch.com/dogs/breeds",
+    { withCredentials: true },
+  );
+  return data;
 }

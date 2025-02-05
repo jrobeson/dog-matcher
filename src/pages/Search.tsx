@@ -1,11 +1,11 @@
 import DogCard from "@/components/DogCard";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { type Dog } from "../types";
 import Pagination from "@/components/Pagination";
 import Header from "@/components/Header";
 import { extractFromParam } from "@/utils/url";
-import { fetchDogs } from "@/api/dogs";
+import { fetchDogs, fetchBreeds } from "@/api/dogs";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,18 +14,31 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
+import BreedFilter from "@/components/BreedFilter";
 
 export default function Search() {
   const [favIds, setFavIds] = useState<Set<string>>(new Set());
   const [page, setPage] = useState<string | undefined>(undefined);
-  const [breedFilters, setBreedFilters] = useState<string[]>([]);
+  const [breedFilters, setBreedFilters] = useState<Set<string>>(new Set());
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["current-dogs", { breedFilters, sortOrder, page }],
+    queryKey: [
+      "current-dogs",
+      { breedFilters: Array.from(breedFilters), sortOrder, page },
+    ],
     queryFn: fetchDogs,
     placeholderData: keepPreviousData,
     retry: false,
   });
+
+  const { data: breeds } = useQuery({
+    queryKey: ["dog-breeds"],
+    queryFn: fetchBreeds,
+  });
+
+  useEffect(() => {
+    setPage(undefined);
+  }, [breedFilters, sortOrder]);
 
   if (isLoading) return <div>Loading dogs...</div>;
   if (isError) return <div>Error loading best friends!</div>;
@@ -42,11 +55,11 @@ export default function Search() {
     });
   }
 
-  const goToPage = (page: number) => {
+  function goToPage(page: number) {
     const validPage = Math.min(page, totalPages);
     const offset = (validPage - 1) * 25;
     setPage(String(offset));
-  };
+  }
 
   function handlePreviousPage() {
     if (data?.prev) {
@@ -65,6 +78,18 @@ export default function Search() {
     }
   }
 
+  function handleBreed(breed: string) {
+    setBreedFilters((prevBreeds) => {
+      const newBreeds = new Set(prevBreeds);
+      if (newBreeds.has(breed)) {
+        newBreeds.delete(breed);
+      } else {
+        newBreeds.add(breed);
+      }
+      return newBreeds;
+    });
+  }
+
   const dogCards = data?.dogs.map((dog: Dog) => (
     <DogCard
       isFavorite={favIds.has(dog.id)}
@@ -75,25 +100,32 @@ export default function Search() {
   ));
 
   return (
-    <div className="bg-stone-100">
-      <Header />
-      <div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="secondary">
-              <ArrowUpDown /> Sort
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => setSortOrder("asc")}>
-              Ascending
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setSortOrder("desc")}>
-              Descending
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+    <div className="bg-stone-50">
+      <Header>
+        <section className="pb-1 pl-1">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary">
+                <ArrowUpDown /> Sort
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => setSortOrder("asc")}>
+                Ascending
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSortOrder("desc")}>
+                Descending
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <BreedFilter
+            breeds={breeds}
+            checkedBreeds={breedFilters}
+            onHandleBreed={handleBreed}
+          />
+        </section>
+      </Header>
+      <div></div>
       <div className="grid scroll-m-10 gap-4 px-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
         {dogCards}
       </div>
@@ -107,20 +139,3 @@ export default function Search() {
     </div>
   );
 }
-
-// async function getBreeds() {
-//   const { data } = await axios.get(
-//     "https://frontend-take-home-service.fetch.com/dogs/breeds",
-//   );
-//   console.log(data);
-//   return data;
-// }
-
-// const {
-//   data: breeds,
-//   isLoading: isLoadingBreeds,
-//   isError: isBreedError,
-// } = useQuery({
-//   queryKey: ["dog-breeds"],
-//   queryFn: getBreeds,
-// });
