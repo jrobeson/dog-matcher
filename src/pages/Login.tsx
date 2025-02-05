@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "../components/ui/card";
 import { useAuth } from "@/store/AuthContext";
+import logo from "../../public/dog-matcher-logo.png";
 
 interface LoginData {
   name: string;
@@ -64,6 +65,10 @@ const Login: React.FC = () => {
     <div className="min-w-screen flex min-h-screen items-center justify-center bg-gray-50">
       <Card className="w-full max-w-md">
         <CardHeader>
+          {/* <CardHeader className="pt-0"> */}
+          {/* <div className="flex w-full items-center justify-center">
+            <img src={logo} alt="" className="rounded-full" />
+          </div> */}
           <CardTitle className="text-center"> Welcome to Dog Matcher</CardTitle>
           <CardDescription className="text-center">
             Let's find your best friend!

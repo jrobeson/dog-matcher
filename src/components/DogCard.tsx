@@ -6,6 +6,7 @@ import { HeartIcon } from "lucide-react";
 interface DogCardProps {
   dog: Dog;
   isFavorite: boolean;
+  isLoading: boolean;
   onToggleFavorite: () => void;
 }
 
