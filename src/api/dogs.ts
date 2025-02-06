@@ -1,3 +1,4 @@
+import { Dog } from "@/types";
 import axios from "axios";
 
 interface DogResponse {
@@ -29,7 +30,7 @@ export async function fetchDogIds(
   return data;
 }
 
-export async function fetchDogDetails(ids: string[]) {
+export async function fetchDogDetails(ids: string[]): Promise<Dog[]> {
   const response = await axios.post(
     "https://frontend-take-home-service.fetch.com/dogs",
     ids,
@@ -64,3 +65,33 @@ export async function fetchBreeds() {
   );
   return data;
 }
+
+export async function fetchMatch(ids: string[]): Promise<string> {
+  try {
+    const { data } = await axios.post(
+      "https://frontend-take-home-service.fetch.com/dogs/match",
+      ids,
+      { withCredentials: true },
+    );
+    return data.match;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("An unexpected matching error occured");
+    }
+  }
+}
+
+export const fetchDogById = async (dogId: string): Promise<Dog> => {
+  console.log('finding by id')
+  const { data } = await axios.post(
+    "https://frontend-take-home-service.fetch.com/dogs",
+    [dogId],
+    {
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true,
+    },
+  );
+  return data[0];
+};

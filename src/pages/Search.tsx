@@ -5,7 +5,7 @@ import { type Dog } from "../types";
 import Pagination from "@/components/Pagination";
 import Header from "@/components/Header";
 import { extractFromParam } from "@/utils/url";
-import { fetchDogs, fetchBreeds } from "@/api/dogs";
+import { fetchDogs, fetchBreeds, fetchMatch } from "@/api/dogs";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +15,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
 import BreedFilter from "@/components/BreedFilter";
+import GenerateMatchDialog from "@/components/GenerateMatchDialog";
+import { response } from "express";
 
 export default function Search() {
   const [favIds, setFavIds] = useState<Set<string>>(new Set());
@@ -104,7 +106,7 @@ export default function Search() {
       <Header>
         <section className="pb-1 pl-1">
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger className="focus:outline-none" asChild>
               <Button variant="secondary">
                 <ArrowUpDown /> Sort
               </Button>
@@ -123,10 +125,11 @@ export default function Search() {
             checkedBreeds={breedFilters}
             onHandleBreed={handleBreed}
           />
+          <GenerateMatchDialog favIds={Array.from(favIds)} />
         </section>
       </Header>
       <div></div>
-      <div className="grid scroll-m-10 gap-4 px-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+      <div className="grid scroll-m-10 gap-4 px-5 py-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
         {dogCards}
       </div>
       <Pagination

@@ -30,8 +30,8 @@ export default function BreedFilter({
   ));
 
   return (
-    <DropdownMenu modal={false}>
-      <DropdownMenuTrigger asChild>
+    <DropdownMenu>
+      <DropdownMenuTrigger className="focus:outline-none" asChild>
         <Button variant="secondary">
           <FilterIcon /> Filters
         </Button>
