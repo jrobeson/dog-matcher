@@ -5,7 +5,7 @@ import { type Dog } from "../types";
 import Pagination from "@/components/Pagination";
 import Header from "@/components/Header";
 import { extractFromParam } from "@/utils/url";
-import { fetchDogs, fetchBreeds, fetchMatch } from "@/api/dogs";
+import { fetchDogs, fetchBreeds } from "@/api/dogs";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
 import BreedFilter from "@/components/BreedFilter";
 import GenerateMatchDialog from "@/components/GenerateMatchDialog";
-import { response } from "express";
 
 export default function Search() {
   const [favIds, setFavIds] = useState<Set<string>>(new Set());
@@ -104,7 +103,7 @@ export default function Search() {
   return (
     <div className="bg-stone-50">
       <Header>
-        <section className="pb-1 pl-1">
+        <section className="bg-stone-50 pb-1 pl-1 shadow-md">
           <DropdownMenu>
             <DropdownMenuTrigger className="focus:outline-none" asChild>
               <Button variant="secondary">

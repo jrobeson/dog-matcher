@@ -84,7 +84,6 @@ export async function fetchMatch(ids: string[]): Promise<string> {
 }
 
 export const fetchDogById = async (dogId: string): Promise<Dog> => {
-  console.log('finding by id')
   const { data } = await axios.post(
     "https://frontend-take-home-service.fetch.com/dogs",
     [dogId],
